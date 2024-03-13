@@ -1,52 +1,48 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boid : MonoBehaviour
+public class UpBoid : MonoBehaviour
 {
     [Header("Set Dynamically")]
     public Rigidbody rigid;
-    private Neighborhood neighborhood;
+    private UpNeighbor upneighborhood;
 
     // Use this for initialization
     void Awake()
     {
-        neighborhood = GetComponent<Neighborhood>();
+        upneighborhood = GetComponent<UpNeighbor>();
         rigid = GetComponent<Rigidbody>();
 
         //Set a random initial position
-        pos = Random.insideUnitSphere * Spawner.S.spawnRadius;
+        uppos = Random.insideUnitSphere * UpSpawner.U.spawnRadius;
 
         //Set a random initial velocity
-        Vector3 vel = Random.onUnitSphere * Spawner.S.velocity;
+        Vector3 vel = Random.onUnitSphere * UpSpawner.U.velocity;
 
         rigid.velocity = vel;
 
         LookAhead();
 
         //Give the Boid a random color, but make sure it's not too dark
-        Color randColor = Color.black;
-        while (randColor.r + randColor.g + randColor.b < 1.0f)
-        {
-            randColor = new Color(Random.value, Random.value, Random.value);
-        }
+        Color redColor = Color.red;
         Renderer[] rends = gameObject.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in rends)
         {
-            r.material.color = randColor;
+            r.material.color = redColor;
         }
         TrailRenderer tRend = GetComponent<TrailRenderer>();
-        tRend.material.SetColor("_TintColor", randColor);
+        tRend.material.SetColor("_TintColor", redColor);
     }
 
 
     void LookAhead()
     {
         //Orients the Boid to look at the direction it's flying
-        transform.LookAt(pos + rigid.velocity);
+        transform.LookAt(uppos + rigid.velocity);
     }
 
-    public Vector3 pos
+    public Vector3 uppos
     {
         get { return transform.position; }
         set { transform.position = value; }
@@ -56,76 +52,76 @@ public class Boid : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 vel = rigid.velocity;
-        Spawner spn = Spawner.S;
+        UpSpawner uspn = UpSpawner.U;
 
         //Collision Avoidance - avoid neigbors who are too close
-        Vector3 velAvoid = Vector3.zero;
-        Vector3 tooClosePos = neighborhood.avgClosePos;
+        Vector3 upvelAvoid = Vector3.zero;
+        Vector3 UptooClosePos = upneighborhood.upavgClosePos;
         // If the response is Vector3.zero, then no need to react
-        if (tooClosePos != Vector3.zero)
+        if (UptooClosePos != Vector3.zero)
         {
-            velAvoid = pos - tooClosePos;
-            velAvoid.Normalize();
-            velAvoid *= spn.velocity;
+            upvelAvoid = uppos - UptooClosePos;
+            upvelAvoid.Normalize();
+            upvelAvoid *= uspn.velocity;
         }
 
         //Velocity matching - Try to match velocity with neigbors
-        Vector3 velAlign = neighborhood.avgVel;
+        Vector3 upvelAlign = upneighborhood.upavgVel;
         // Only do more if the velAlign is not Vector3.zero
-        if (velAlign != Vector3.zero)
+        if (upvelAlign != Vector3.zero)
         {
             // we're really interested in direction, so normalize the velocity
-            velAlign.Normalize();
+            upvelAlign.Normalize();
             // and then set it to the speeed we chose
-            velAlign *= spn.velocity;
+            upvelAlign *= uspn.velocity;
         }
 
         //Flock centering - move towards the center of local neighbors
-        Vector3 velCenter = neighborhood.avgPos;
+        Vector3 velCenter = upneighborhood.upavgPos;
         if (velCenter != Vector3.zero)
         {
             velCenter -= transform.position;
             velCenter.Normalize();
-            velCenter *= spn.velocity;
+            velCenter *= uspn.velocity;
         }
 
         //ATTRACTION - Move towards the Atttractor
-        Vector3 delta = Attractor.POS - pos;
+        Vector3 delta = UpAttract.POS - uppos;
         //Check whether we're attracted or avoiding the Attractor
-        bool attracted = (delta.magnitude > spn.attractPushDist);
-        Vector3 velAttract = delta.normalized * spn.velocity;
+        bool attracted = (delta.magnitude > uspn.attractPushDist);
+        Vector3 velAttract = delta.normalized * uspn.velocity;
 
         //Apply all the velocities
         float fdt = Time.fixedDeltaTime;
-        if (velAvoid != Vector3.zero)
+        if (upvelAvoid != Vector3.zero)
         {
-            vel = Vector3.Lerp(vel, velAvoid, spn.collAvoid);
+            vel = Vector3.Lerp(vel, upvelAvoid, uspn.collAvoid);
         }
         else
         {
-            if (velAlign != Vector3.zero)
+            if (upvelAlign != Vector3.zero)
             {
-                vel = Vector3.Lerp(vel, velAlign, spn.velMatching * fdt);
+                vel = Vector3.Lerp(vel, upvelAlign, uspn.velMatching * fdt);
             }
             if (velCenter != Vector3.zero)
             {
-                vel = Vector3.Lerp(vel, velAlign, spn.flockCentering * fdt);
+                vel = Vector3.Lerp(vel, upvelAlign, uspn.flockCentering * fdt);
             }
             if (velAttract != Vector3.zero)
             {
                 if (attracted)
                 {
-                    vel = Vector3.Lerp(vel, velAttract, spn.attractPull * fdt);
+                    vel = Vector3.Lerp(vel, velAttract, uspn.attractPull * fdt);
                 }
                 else
                 {
-                    vel = Vector3.Lerp(vel, -velAttract, spn.attractPush * fdt);
+                    vel = Vector3.Lerp(vel, -velAttract, uspn.attractPush * fdt);
                 }
             }
         }
 
         //set vel to the velocity set on the spawner singleton
-        vel = vel.normalized * spn.velocity;
+        vel = vel.normalized * uspn.velocity;
         // Finally assign this to the Rigidbody
         rigid.velocity = vel;
         //Lock in the direction of the new velocity

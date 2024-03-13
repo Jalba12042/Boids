@@ -1,19 +1,20 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public class Spawner : MonoBehaviour
+public class UpSpawner : MonoBehaviour
 {
     //This is a Singleton of the BoidSpawner. there is only one instance 
     // of BoidSpawner, so we can store it in a static variable named s.
-    static public Spawner S;
-    static public List<Boid> boids;
+    static public UpSpawner U;
+    static public List<UpBoid> upboids;
 
     // These fields allow you to adjust the spawning behavior of the boids
     [Header("Set in Inspector: Spawning")]
     public GameObject boidPrefab;
     public Transform boidAnchor;
-    public int numBoids = 100;
+    public int upnumBoids = 100;
     public float spawnRadius = 100f;
     public float spawnDelay = 0.1f;
 
@@ -32,21 +33,21 @@ public class Spawner : MonoBehaviour
     void Awake()
     {
         //Set the Singleton S to be this instance of BoidSpawner
-        S = this;
+        U = this;
         //Start instantiation of the Boids
-        boids = new List<Boid>();
-        InstantiateBoid();
+        upboids = new List<UpBoid>();
+        upInstantiateBoid();
     }
 
-    public void InstantiateBoid()
+    public void upInstantiateBoid()
     {
         GameObject go = Instantiate(boidPrefab);
-        Boid b = go.GetComponent<Boid>();
-        b.transform.SetParent(boidAnchor);
-        boids.Add(b);
-        if (boids.Count < numBoids)
+        UpBoid c = go.GetComponent<UpBoid>();
+        c.transform.SetParent(boidAnchor);
+        upboids.Add(c);
+        if (upboids.Count < upnumBoids)
         {
-            Invoke("InstantiateBoid", spawnDelay);
+            Invoke("upInstantiateBoid", spawnDelay);
         }
     }
 }

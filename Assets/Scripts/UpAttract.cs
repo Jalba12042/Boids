@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-public class Attractor : MonoBehaviour
+public class UpAttract : MonoBehaviour
 {
     static public Vector3 POS = Vector3.zero;
 
@@ -13,8 +13,8 @@ public class Attractor : MonoBehaviour
     // Define the boundaries for the attractor's movement
     public float minX = -10f;
     public float maxX = 10f;
-    public float minY = -10f;
-    public float maxY = 10f;
+    public float minY = 50f;
+    public float maxY = 70f;
     public float minZ = -10f;
     public float maxZ = 10f;
 

@@ -5,8 +5,8 @@ using UnityEngine;
 public class Neighborhood : MonoBehaviour
 {
     [Header("Set Dynamically")]
-    public List<Boid>       neighbors;
-    private SphereCollider  coll;
+    public List<Boid> neighbors;
+    private SphereCollider coll;
 
     void Start()
     {
@@ -18,9 +18,9 @@ public class Neighborhood : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (coll.radius != Spawner.S.neighborDist/2)
+        if (coll.radius != Spawner.S.neighborDist / 2)
         {
-            coll.radius = Spawner.S.neighborDist/2;
+            coll.radius = Spawner.S.neighborDist / 2;
         }
     }
 
@@ -30,7 +30,8 @@ public class Neighborhood : MonoBehaviour
         if (b != null)
         {
             if (neighbors.IndexOf(b) == -1)
-            { neighbors.Add(b);
+            {
+                neighbors.Add(b);
             }
         }
     }
@@ -49,12 +50,12 @@ public class Neighborhood : MonoBehaviour
 
     public Vector3 avgPos
     {
-        get 
+        get
         {
             Vector3 avg = Vector3.zero;
             if (neighbors.Count == 0) return avg;
 
-            for (int i=0; i<neighbors.Count; i++)
+            for (int i = 0; i < neighbors.Count; i++)
             {
                 avg += neighbors[i].pos;
             }

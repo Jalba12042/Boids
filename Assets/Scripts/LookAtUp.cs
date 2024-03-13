@@ -1,8 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LookAtAttractor : MonoBehaviour
+public class LookAtUp : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -13,6 +13,6 @@ public class LookAtAttractor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.LookAt(Attractor.POS);
+        transform.LookAt(UpAttract.POS);
     }
 }
